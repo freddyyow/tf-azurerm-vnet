@@ -1,4 +1,4 @@
-resource "azurerm_resource_group" "example" {
+resource "azurerm_resource_group" "rg" {
   count = var.create_resource_group ? 1 : 0
 
   name     = var.resource_group_name
@@ -8,8 +8,8 @@ resource "azurerm_resource_group" "example" {
 
 resource "azurerm_virtual_network" "virtual_network" {
   name                = "example-network"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
   address_space       = var.address_space
   #dns_servers         = ["10.0.0.4", "10.0.0.5"] # add as a separate resource so it can be conditional
 
