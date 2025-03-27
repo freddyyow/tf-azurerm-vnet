@@ -41,7 +41,7 @@ resource "azurerm_route_table" "route_table" {
   resource_group_name = azurerm_resource_group.rg
 
   route {
-    name = var.route_table.route_name
+    name                   = var.route_table.route_name
     address_prefix         = var.route_table.address_prefix
     next_hop_type          = var.route_table.next_hop_type
     next_hop_in_ip_address = var.security_domain_hub[var.security_domain].ip
@@ -69,8 +69,8 @@ resource "azurerm_subnet_route_table_association" "name" {
 resource "azurerm_virtual_network_peering" "peering" {
   for_each = var.vnet_peering
 
-  name = "${local.prefix}-peering"
-  resource_group_name = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.virtual_network.name
+  name                      = "${local.prefix}-peering"
+  resource_group_name       = azurerm_resource_group.rg.name
+  virtual_network_name      = azurerm_virtual_network.virtual_network.name
   remote_virtual_network_id = var.security_domain_hub[var.security_domain].id
 }
