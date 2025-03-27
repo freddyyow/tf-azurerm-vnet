@@ -69,7 +69,7 @@ resource "azurerm_subnet_route_table_association" "name" {
 resource "azurerm_virtual_network_peering" "peering" {
   for_each = var.vnet_peering
 
-  name = "${local.prefix}-"
+  name = "${local.prefix}-peering"
   resource_group_name = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.virtual_network.name
   remote_virtual_network_id = var.security_domain_hub[var.security_domain].id
