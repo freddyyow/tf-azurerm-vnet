@@ -1,3 +1,20 @@
+variable "environment" {
+    type = string
+    description = "environment to depploy to"
+
+    default = "dev"
+
+    validation {
+      condition = contains(["dev", "uat", "stg", "prod"])
+      error_message = "only allowed values are dev, stg, uat, prod"
+    }
+  
+}
+
+variable "application_name" {
+  
+}
+
 variable "security_domain" {
   type = string
 
@@ -7,19 +24,27 @@ variable "security_domain" {
   }
 }
 
-variable "security_domain_hub_ip" {
+variable "security_domain_hub" {
   type = map(string)
 
   default = {
-    "busops"   = "10.160.0.4/32"
-    "netops"   = "10.168.0.4/32"
-    "external" = "10.150.0.4/32"
+    busops = {
+        ip = "10.160.0.4/32"
+        vnet_id = "somevalue"
+
+    }
   }
 
+#   default = {
+#     "busops"   = "10.160.0.4/32"
+#     "netops"   = "10.168.0.4/32"
+#     "external" = "10.150.0.4/32"
+#   }
 }
 
 variable "address_space" {
-
+    type = list(string)
+    description = "CIDR range provided by network team"
 }
 
 variable "tags" {
@@ -27,14 +52,10 @@ variable "tags" {
 }
 
 variable "location" {
+    type = string
+    description = "the Azure region to deploy to"
 
-}
-
-variable "resource_group_name" {
-
-}
-
-variable "create_resource_group" {
+    default = "canadacentral"
 
 }
 
@@ -56,10 +77,14 @@ variable "address_prefix" {
 
 variable "route_table" {
   type = map(object({
-    name           = string
+    route_name           = string
     address_prefix = optional(string, "0.0.0.0/0")
     next_hop_type  = optional(string, "VirtualAppliance")
   }))
-  default = {}
+  #default = {}
+}
+
+variable "vnet_peering" {
+  
 }
 

@@ -1,11 +1,11 @@
 resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
+  name     = "${local.prefix}-rg"
   location = var.location
 }
 
 
 resource "azurerm_virtual_network" "virtual_network" {
-  name                = "example-network"
+  name                = "${local.prefix}-vnet"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   address_space       = var.address_space
@@ -19,7 +19,7 @@ resource "azurerm_subnet" "subnet" {
   for_each = var.subnet_config
 
   name                 = each.key
-  resource_group_name  = var.resource_group_name
+  resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.virtual_network.name
   address_prefixes     = each.value.address_prefix
 
@@ -35,16 +35,16 @@ resource "azurerm_subnet" "subnet" {
 }
 
 resource "azurerm_route_table" "route_table" {
-  for_each            = var.route_table
+  #for_each            = var.route_table
   name                = each.key
-  location            = var.location
-  resource_group_name = var.resource_group_name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg
 
   route {
-    name                   = each.value.route_name
-    address_prefix         = each.value.address_prefix
-    next_hop_type          = each.value.next_hop_type
-    next_hop_in_ip_address = var.security_domain_hub_ip[var.security_domain]
+    name = var.route_table.route_name
+    address_prefix         = var.route_table.address_prefix
+    next_hop_type          = var.route_table.next_hop_type
+    next_hop_in_ip_address = var.security_domain_hub[var.security_domain].ip
   }
 }
 
@@ -64,4 +64,13 @@ resource "azurerm_subnet_route_table_association" "name" {
   subnet_id      = each.value
 
   depends_on = [azurerm_subnet.subnet]
+}
+
+resource "azurerm_virtual_network_peering" "peering" {
+  for_each = var.vnet_peering
+
+  name = "${local.prefix}-"
+  resource_group_name = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.virtual_network.name
+  remote_virtual_network_id = var.security_domain_hub[var.security_domain].id
 }
